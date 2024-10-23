@@ -11,10 +11,16 @@ async function bootstrap() {
   );
   const reflector = app.get(Reflector);
   app.useGlobalGuards(new JwtAuthGuard(reflector));
+
+  app.enableCors({
+    origin: "http://localhost:3001/",
+    methods: "GET,POST,PUT,PATCH,DELETE,HEAD",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  })
   app.useGlobalPipes(new ValidationPipe());
   const configService = app.get(ConfigService);
   const port = configService.get<string>('PORT');
-  app.setViewEngine('ejs');
 
   await app.listen(port || 3000);
 }
