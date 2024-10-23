@@ -4,6 +4,10 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Company, CompanyDocument } from './schemas/company.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { IUser } from 'src/users/users.interface';
+import mongoose from 'mongoose';
+import aqp from 'api-query-params';
+import { isEmpty } from 'class-validator';
 
 @Injectable()
 export class CompaniesService {
@@ -12,23 +16,79 @@ export class CompaniesService {
     private companyModel: SoftDeleteModel<CompanyDocument>
   ) { };
 
-  create(createCompanyDto: CreateCompanyDto) {
-    return this.companyModel.create({ ...createCompanyDto })
+  create(createCompanyDto: CreateCompanyDto, user: IUser) {
+    return this.companyModel.create({
+      ...createCompanyDto, createdBy: {
+        _id: new mongoose.Types.ObjectId(user._id),
+        email: user.email
+      }
+    })
   }
 
-  findAll() {
-    return `This action returns all companies`;
+  async findAll(currentPage: number, limit: number, qsUrl: string) {
+    const { filter } = aqp(qsUrl)
+    let { sort }: { sort: any } = aqp(qsUrl)
+    delete filter.page
+
+    let offset = (currentPage - 1) * limit
+    let defaultLimit = limit ? limit : 10
+
+    const totalItems = (await this.companyModel.find(filter)).length
+    const totalPages = Math.ceil(totalItems / defaultLimit)
+
+    if (isEmpty(sort)) {
+      sort = "-updatedAt"
+    }
+    const result = await this.companyModel.find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      .sort(sort)
+      .exec();
+
+    return {
+      meta: {
+        current: currentPage,
+        pageSize: limit,
+        pages: totalPages,
+        total: totalItems
+      },
+      result
+    }
   }
 
   findOne(id: number) {
     return `This action returns a #${id} company`;
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
+  update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) return {
+      msg: "User not found!"
+    }
+    return this.companyModel.updateOne({
+      _id: id,
+    }, {
+      ...updateCompanyDto,
+      updatedBy: {
+        _id: new mongoose.Types.ObjectId(user._id),
+        email: user.email
+      }
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id: string, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) return {
+      msg: "User not found!"
+    }
+    await this.companyModel.updateOne({
+      _id: id,
+    }, {
+      deletedBy: {
+        _id: new mongoose.Types.ObjectId(user._id),
+        email: user.email
+      }
+    })
+    return this.companyModel.softDelete({
+      _id: id
+    });
   }
 }
