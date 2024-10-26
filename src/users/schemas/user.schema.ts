@@ -26,7 +26,7 @@ export class User {
   @Prop({ type: Object })
   company: {
     _id: mongoose.Schema.Types.ObjectId,
-    email: string
+    name: string
   }
 
   @Prop()

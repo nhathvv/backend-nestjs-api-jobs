@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 
 class CompanyDTO {
   _id: mongoose.Schema.Types.ObjectId
-  email: string
+  name: string
 }
 export class CreateUserDto {
   @IsNotEmpty()
@@ -35,4 +35,24 @@ export class CreateUserDto {
   @ValidateNested()
   @Type(() => CompanyDTO)
   company: CompanyDTO
+}
+export class RegisterUserDTO {
+  @IsNotEmpty()
+  name: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  password: string;
+
+  @IsNotEmpty()
+  gender: string;
+
+  @IsNotEmpty()
+  age: number;
+
+  @IsNotEmpty()
+  address: string
 }
