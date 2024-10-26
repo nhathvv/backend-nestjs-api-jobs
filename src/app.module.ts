@@ -9,23 +9,25 @@ import { softDeletePlugin } from 'soft-delete-plugin-mongoose';
 import { CompaniesModule } from './companies/companies.module';
 
 @Module({
-  imports: [MongooseModule.forRootAsync({
-    useFactory: async (configService: ConfigService) => ({
-      uri: configService.get<string>("MONGODB_URI"),
-      connectionFactory: (connection) => {
-        connection.plugin(softDeletePlugin);
-        return connection;
-      }
+  imports: [
+    MongooseModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+        connectionFactory: (connection) => {
+          connection.plugin(softDeletePlugin);
+          return connection;
+        },
+      }),
+      inject: [ConfigService],
     }),
-    inject: [ConfigService]
-  }),
-  ConfigModule.forRoot({
-    isGlobal: true
-  }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     UsersModule,
     AuthModule,
-    CompaniesModule],
+    CompaniesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

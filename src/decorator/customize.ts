@@ -7,7 +7,7 @@ export const RESPONSE_MESSAGE = 'response_message';
 
 export const ResponeMessage = (message: string) => {
   return SetMetadata(RESPONSE_MESSAGE, message);
-}
+};
 
 export const User = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {

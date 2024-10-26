@@ -7,34 +7,34 @@ import { UsersService } from 'src/users/users.service';
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
-  ) { }
+    private jwtService: JwtService,
+  ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOneByEmail(username);
     if (user) {
       if (this.usersService.isValidPassword(pass, user.password)) {
-        return user
+        return user;
       }
     }
     return null;
   }
   async login(user: IUser) {
-    const { _id, name, email, role } = user
+    const { _id, name, email, role } = user;
     const payload = {
-      sub: "Token Login",
-      iss: "From server",
+      sub: 'Token Login',
+      iss: 'From server',
       _id,
       name,
       email,
-      role
-    }
+      role,
+    };
     return {
       access_token: this.jwtService.sign(payload),
       _id,
       name,
       email,
-      role
+      role,
     };
   }
 }

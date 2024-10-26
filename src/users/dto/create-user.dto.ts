@@ -1,15 +1,38 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsDefined, IsEmail, IsNotEmpty, IsNotEmptyObject, IsObject, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import mongoose from 'mongoose';
 
-export class CreateUserDto {
-  name: string
-
-  @IsEmail()
-  @IsNotEmpty()
+class CompanyDTO {
+  _id: mongoose.Schema.Types.ObjectId
   email: string
+}
+export class CreateUserDto {
+  @IsNotEmpty()
+  name: string;
 
   @IsNotEmpty()
-  password: string
+  @IsEmail()
+  email: string;
 
-  age: number
-  phone: string
+  @IsNotEmpty()
+  password: string;
+
+  @IsNotEmpty()
+  gender: string;
+
+  @IsNotEmpty()
+  age: number;
+
+  @IsNotEmpty()
+  address: string
+
+  @IsNotEmpty()
+  role: string
+
+  @IsDefined()
+  @IsNotEmptyObject()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CompanyDTO)
+  company: CompanyDTO
 }
