@@ -14,7 +14,7 @@ export class CompaniesService {
   constructor(
     @InjectModel(Company.name)
     private companyModel: SoftDeleteModel<CompanyDocument>,
-  ) {}
+  ) { }
 
   create(createCompanyDto: CreateCompanyDto, user: IUser) {
     return this.companyModel.create({
@@ -29,7 +29,10 @@ export class CompaniesService {
   async findAll(currentPage: number, limit: number, qsUrl: string) {
     const { filter } = aqp(qsUrl);
     let { sort }: { sort: any } = aqp(qsUrl);
-    delete filter.page;
+
+    delete filter.current;
+    delete filter.pageSize;
+
 
     const offset = (currentPage - 1) * limit;
     const defaultLimit = limit ? limit : 10;

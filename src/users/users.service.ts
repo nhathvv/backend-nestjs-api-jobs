@@ -4,10 +4,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from './users.interface';
-import { ResponeMessage } from 'src/decorator/customize';
 import aqp from 'api-query-params';
 import { isEmpty } from 'class-validator';
 
@@ -62,7 +61,9 @@ export class UsersService {
   async findAll(currentPage: number, limit: number, qsUrl: string) {
     const { filter } = aqp(qsUrl);
     let { sort }: { sort: any } = aqp(qsUrl);
-    delete filter.page;
+
+    delete filter.current;
+    delete filter.pageSize;
 
     const offset = (currentPage - 1) * limit;
     const defaultLimit = limit ? limit : 10;
@@ -98,8 +99,9 @@ export class UsersService {
       };
     return this.userModel.findOne({
       _id: id,
-    }).select("-password");
+    }).select(["-password", "-refreshToken"]);
   }
+
   findOneByEmail(email: string) {
     return this.userModel.findOne({
       email,
@@ -108,7 +110,11 @@ export class UsersService {
   isValidPassword(password: string, hash: string) {
     return compareSync(password, hash);
   }
-
+  updateUserToken(refreshToken: string, _id: string) {
+    return this.userModel.updateOne({
+      _id
+    }, { refreshToken })
+  }
   update(updateUserDto: UpdateUserDto) {
     const userId = updateUserDto._id.toString()
     if (!mongoose.Types.ObjectId.isValid(userId))
@@ -132,5 +138,10 @@ export class UsersService {
     return this.userModel.softDelete({
       _id: id,
     });
+  }
+  async findUserByToken(refreshToken: string) {
+    return this.userModel.findOne({
+      refreshToken
+    })
   }
 }

@@ -5,21 +5,23 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { TransformInterceptor } from './transform.interceptor';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const reflector = app.get(Reflector);
   app.useGlobalGuards(new JwtAuthGuard(reflector));
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
+  app.use(cookieParser())
 
   app.enableCors({
-    origin: 'http://localhost:3001/',
+    origin: true,
     methods: 'GET,POST,PUT,PATCH,DELETE,HEAD',
     preflightContinue: false,
     optionsSuccessStatus: 204,
+    credentials: true
   });
   app.useGlobalPipes(new ValidationPipe());
-
   // config versioning
   app.setGlobalPrefix('api');
   app.enableVersioning({
