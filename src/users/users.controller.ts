@@ -14,7 +14,6 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public, ResponeMessage, User } from 'src/decorator/customize';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 
 @Controller('users')
 export class UsersController {

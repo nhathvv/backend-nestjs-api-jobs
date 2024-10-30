@@ -2,7 +2,7 @@ import { IsDefined, IsEmail, IsNotEmpty, IsNotEmptyObject, IsObject, ValidateNes
 import { Type } from 'class-transformer';
 import mongoose from 'mongoose';
 
-class CompanyDTO {
+export class CompanyDTO {
   _id: mongoose.Schema.Types.ObjectId
   name: string
 }
