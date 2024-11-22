@@ -32,8 +32,8 @@ export class ResumesService {
         _id: new mongoose.Types.ObjectId(user._id),
         email: user.email
       },
-      company: new mongoose.Types.ObjectId(CreateCvDto.company.toString()),
-      job: new mongoose.Types.ObjectId(CreateCvDto.job.toString())
+      companyId: new mongoose.Types.ObjectId(CreateCvDto.companyId.toString()),
+      jobId: new mongoose.Types.ObjectId(CreateCvDto.jobId.toString())
     })
     return {
       _id: newCV?.id,

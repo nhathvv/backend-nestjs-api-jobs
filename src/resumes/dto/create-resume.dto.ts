@@ -15,18 +15,18 @@ export class CreateResumeDto {
   status: string // PENDING-REVIEWING-APPROVED-REJECTED
 
   @IsNotEmpty()
-  company: mongoose.Schema.Types.ObjectId
+  companyId: mongoose.Schema.Types.ObjectId
 
   @IsNotEmpty()
-  job: mongoose.Schema.Types.ObjectId
+  jobId: mongoose.Schema.Types.ObjectId
 }
 export class CreateCvDto {
   @IsNotEmpty()
   url: string
 
   @IsNotEmpty()
-  company: mongoose.Schema.Types.ObjectId
+  companyId: mongoose.Schema.Types.ObjectId
 
   @IsNotEmpty()
-  job: mongoose.Schema.Types.ObjectId
+  jobId: mongoose.Schema.Types.ObjectId
 }
