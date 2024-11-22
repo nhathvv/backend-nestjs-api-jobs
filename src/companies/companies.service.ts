@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -61,15 +61,17 @@ export class CompaniesService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
+  findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid user!');
+    }
+    return this.companyModel.findById({ _id: id })
   }
 
   update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return {
-        msg: 'User not found!',
-      };
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid user!');
+    }
     return this.companyModel.updateOne(
       {
         _id: id,

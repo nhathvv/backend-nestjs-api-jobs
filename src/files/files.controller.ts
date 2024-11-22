@@ -8,10 +8,9 @@ import { Public, ResponeMessage } from 'src/decorator/customize';
 export class FilesController {
   constructor(private readonly filesService: FilesService) { }
 
-  @Public()
   @Post('upload')
   @ResponeMessage("Upload single file")
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('fileUpload'))
   uploadFile(
     @UploadedFile(
       new ParseFilePipeBuilder()

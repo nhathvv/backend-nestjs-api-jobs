@@ -6,6 +6,7 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { TransformInterceptor } from './transform.interceptor';
 import cookieParser from 'cookie-parser';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -21,6 +22,7 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
     credentials: true
   });
+  app.useStaticAssets(join(__dirname, '..', 'public'));
   app.useGlobalPipes(new ValidationPipe());
   // config versioning
   app.setGlobalPrefix('api');

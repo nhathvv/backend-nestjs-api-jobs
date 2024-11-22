@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 export class CompanyDTO {
   _id: mongoose.Schema.Types.ObjectId
   name: string
+  logo: string
 }
 export class CreateUserDto {
   @IsNotEmpty()
