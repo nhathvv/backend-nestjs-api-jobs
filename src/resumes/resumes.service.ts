@@ -8,6 +8,7 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import mongoose from 'mongoose';
 import aqp from 'api-query-params';
 import { isEmpty } from 'class-validator';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ResumesService {
@@ -135,12 +136,13 @@ export class ResumesService {
   }
 
   async getCVbyUser(user: IUser) {
-    console.log(">> check user", user._id)
     if (!mongoose.Types.ObjectId.isValid(user._id)) {
       throw new BadGatewayException("Invalid id!")
     }
     return this.resumeModel.find({
       userId: user._id
     })
+      .sort("-createdAt")
+      .populate([{ path: "companyId", select: { name: 1 } }, { path: "jobId", select: { name: 1 } }])
   }
 }

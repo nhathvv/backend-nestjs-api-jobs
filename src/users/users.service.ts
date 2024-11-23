@@ -9,12 +9,14 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from './users.interface';
 import aqp from 'api-query-params';
 import { isEmpty } from 'class-validator';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: SoftDeleteModel<UserDocument>,
+    private configService: ConfigService
   ) { }
   hashPassword(password: string) {
     const salt = genSaltSync(10);
@@ -78,6 +80,7 @@ export class UsersService {
       .find(filter)
       .skip(offset)
       .limit(defaultLimit)
+      .populate([{ path: "role", select: { _id: 1, name: 1 } }])
       .sort(sort)
       .exec();
 
@@ -99,13 +102,13 @@ export class UsersService {
       };
     return this.userModel.findOne({
       _id: id,
-    }).select(["-password", "-refreshToken"]);
+    }).select(["-password", "-refreshToken"]).populate([{ path: "role", select: { _id: 1, name: 1 } }])
   }
 
   findOneByEmail(email: string) {
     return this.userModel.findOne({
       email,
-    });
+    }).populate([{ path: "role", select: { _id: 1, permissions: 1 } }])
   }
   isValidPassword(password: string, hash: string) {
     return compareSync(password, hash);
@@ -125,10 +128,14 @@ export class UsersService {
   }
 
   async remove(id: string, user: IUser) {
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return {
-        msg: 'User not found!',
-      };
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException("Invalid ID")
+    }
+    const foundUser = await this.userModel.findById(id)
+    if (foundUser.email === this.configService.get<string>('GMAIL_ADMIN')) {
+      throw new BadRequestException("Không được xoá tài khoản ADMIN!")
+    }
     await this.userModel.updateOne({ _id: new mongoose.Types.ObjectId(id) }, {
       deletedBy: {
         _id: new mongoose.Types.ObjectId(user._id),

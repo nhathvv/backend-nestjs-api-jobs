@@ -9,12 +9,14 @@ import { IUser } from 'src/users/users.interface';
 import mongoose from 'mongoose';
 import aqp from 'api-query-params';
 import { isEmpty } from 'class-validator';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RolesService {
   constructor(
     @InjectModel(Role.name)
     private roleModel: SoftDeleteModel<RoleDocument>,
+    private configService: ConfigService
   ) { }
   async create(createRoleDto: CreateRoleDto, user: IUser) {
     const { name, description, isActive, permissions } = createRoleDto
@@ -109,7 +111,7 @@ export class RolesService {
     const role = await this.roleModel.findOne({
       _id: id,
     })
-    if (role.name === 'ADMIN') {
+    if (role.name === this.configService.get<string>('ROLE_ADMIN')) {
       throw new BadRequestException("Không được xoá role ADMIN")
     }
     await this.roleModel.updateOne({
