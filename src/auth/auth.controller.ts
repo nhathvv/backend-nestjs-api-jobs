@@ -5,10 +5,14 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { RegisterUserDTO } from 'src/users/dto/create-user.dto';
 import { Response, Request } from 'express';
 import { IUser } from 'src/users/users.interface';
+import { RolesService } from 'src/roles/roles.service';
 
 @Controller('/auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private roleService: RolesService
+  ) { }
 
   @Public()
   @UseGuards(LocalAuthGuard)
@@ -27,7 +31,9 @@ export class AuthController {
 
   @Get("/account")
   @ResponeMessage("Get user information")
-  handleGetAccount(@User() user: IUser) {
+  async handleGetAccount(@User() user: IUser) {
+    const temp = await this.roleService.findOne(user.role._id.toString()) as any
+    user.permissions = temp.permissions
     return {
       user
     }

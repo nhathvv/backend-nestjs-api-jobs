@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
 import ms from 'ms';
+import { RolesService } from 'src/roles/roles.service';
 import { RegisterUserDTO } from 'src/users/dto/create-user.dto';
 import { IUser } from 'src/users/users.interface';
 import { UsersService } from 'src/users/users.service';
@@ -12,14 +13,21 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private roleService: RolesService,
   ) { }
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOneByEmail(username);
     if (user) {
       if (this.usersService.isValidPassword(pass, user.password)) {
-        return user;
+        const userRole = user.role as unknown as { _id: string, name: string }
+        const temp = await this.roleService.findOne(userRole._id)
+        const objUser = {
+          ...user.toObject(),
+          permissions: temp?.permissions ?? []
+        }
+        return objUser;
       }
     }
     return null;
@@ -31,7 +39,7 @@ export class AuthService {
     })
   }
   async login(user: IUser, res: Response) {
-    const { _id, name, email, role } = user;
+    const { _id, name, email, role, permissions } = user;
     const payload = {
       sub: 'Token Login',
       iss: 'From server',
@@ -52,7 +60,7 @@ export class AuthService {
         _id,
         name,
         email,
-        role,
+        role, permissions
       }
     };
   }
@@ -78,6 +86,8 @@ export class AuthService {
         };
         const refresh_token = this.signRefreshToken(payload)
         await this.usersService.updateUserToken(refresh_token, _id.toString())
+        const userRole = user.role as unknown as { _id: string, name: string }
+        const temp = await this.roleService.findOne(userRole._id)
         response.clearCookie("refresh_token")
         response.cookie("refresh_token", refresh_token, {
           httpOnly: true,
@@ -90,6 +100,7 @@ export class AuthService {
             name,
             email,
             role,
+            permissions: temp?.permissions ?? []
           }
         };
       } else {

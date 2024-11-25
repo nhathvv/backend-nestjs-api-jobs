@@ -10,12 +10,18 @@ import { IUser } from './users.interface';
 import aqp from 'api-query-params';
 import { isEmpty } from 'class-validator';
 import { ConfigService } from '@nestjs/config';
+import { Role, RoleDocument } from 'src/roles/schemas/role.schema';
+import { USER_ROLE } from 'src/databases/sample';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: SoftDeleteModel<UserDocument>,
+
+    @InjectModel(Role.name)
+    private roleModel: SoftDeleteModel<RoleDocument>,
+
     private configService: ConfigService
   ) { }
   hashPassword(password: string) {
@@ -49,10 +55,11 @@ export class UsersService {
     if (isEmailExits) {
       throw new BadRequestException(`Email đã tồn tại trên hệ thống. Vui lòng sử dụng email khác!`)
     }
+    const userRole = await this.roleModel.findOne({ name: USER_ROLE })
     const data = await this.userModel.create({
       ...registerUserDTO,
       password: await this.hashPassword(registerUserDTO.password),
-      role: "USER"
+      role: userRole?._id
     })
     return {
       _id: data.id,
@@ -108,7 +115,7 @@ export class UsersService {
   findOneByEmail(email: string) {
     return this.userModel.findOne({
       email,
-    }).populate([{ path: "role", select: { _id: 1, permissions: 1 } }])
+    }).populate([{ path: "role", select: { name: 1 } }])
   }
   isValidPassword(password: string, hash: string) {
     return compareSync(password, hash);
@@ -149,6 +156,11 @@ export class UsersService {
   async findUserByToken(refreshToken: string) {
     return this.userModel.findOne({
       refreshToken
-    })
+    }).populate([{
+      path: "role",
+      select: {
+        name: 1
+      }
+    }])
   }
 }
