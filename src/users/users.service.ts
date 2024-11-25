@@ -140,7 +140,7 @@ export class UsersService {
       throw new BadRequestException("Invalid ID")
     }
     const foundUser = await this.userModel.findById(id)
-    if (foundUser.email === this.configService.get<string>('GMAIL_ADMIN')) {
+    if (foundUser && foundUser.email === this.configService.get<string>('GMAIL_ADMIN')) {
       throw new BadRequestException("Không được xoá tài khoản ADMIN!")
     }
     await this.userModel.updateOne({ _id: new mongoose.Types.ObjectId(id) }, {

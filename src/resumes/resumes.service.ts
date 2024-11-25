@@ -18,6 +18,7 @@ export class ResumesService {
   ) { }
   async create(CreateCvDto: CreateCvDto, user: IUser) {
     const newCV = await this.resumeModel.create({
+      url: CreateCvDto.url,
       email: user.email,
       userId: new mongoose.Types.ObjectId(user._id),
       status: "PENDING",
