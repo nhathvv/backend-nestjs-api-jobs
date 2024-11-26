@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { IS_PUBLIC_KEY } from 'src/decorator/customize';
+import { IS_PUBLIC_KEY, IS_PUBLIC_PERMISSIONS } from 'src/decorator/customize';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -27,6 +27,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   handleRequest(err, user, info, context: ExecutionContext) {
     const request: Request = context.switchToHttp().getRequest()
+    const isPublicPermission = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_PERMISSIONS, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
     if (err || !user) {
       throw (
         err ||
@@ -38,10 +42,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const targetMethod = request.method
     const targetEndPoint = request.route.path
     const permissions = user?.permissions ?? []
-    const isExits = permissions.find(permission => {
+    let isExits = permissions.find(permission => {
       return targetEndPoint === permission.apiPath && targetMethod === permission.method
     })
-    if (!isExits) {
+    if (targetEndPoint.startsWith("/api/v1/auth")) isExits = true
+    if (!isExits && !isPublicPermission) {
       throw new ForbiddenException("Bạn không có quyền truy cập Endpoint này !!!")
     }
     return user;

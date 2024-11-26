@@ -23,7 +23,11 @@ async function bootstrap() {
     credentials: true
   });
   app.useStaticAssets(join(__dirname, '..', 'public'));
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe(
+    {
+      whitelist: true,
+    }
+  ));
   // config versioning
   app.setGlobalPrefix('api');
   app.enableVersioning({
