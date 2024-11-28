@@ -7,6 +7,9 @@
     "assets": [
       "mail/templates/**/*"
     ],
+    "plugins": [
+      "@nestjs/swagger"
+    ],
     "watchAssets": true
   }
 }
