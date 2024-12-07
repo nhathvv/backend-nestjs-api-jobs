@@ -14,23 +14,23 @@ export class JobsService {
   constructor(
     @InjectModel(Job.name)
     private jobModel: SoftDeleteModel<JobDocument>,
-  ) { }
+  ) {}
   async create(createJobDto: CreateJobDto, user: IUser) {
     const result = await this.jobModel.create({
       ...createJobDto,
       company: {
         _id: new mongoose.Types.ObjectId(createJobDto.company._id.toString()),
-        name: createJobDto.company.name
+        name: createJobDto.company.name,
       },
       createdBy: {
         _id: new mongoose.Types.ObjectId(user._id),
-        name: user.name
-      }
-    })
+        name: user.name,
+      },
+    });
     return {
       _id: result._id,
-      createdAt: result.createdAt
-    }
+      createdAt: result.createdAt,
+    };
   }
   async findAll(currentPage: number, limit: number, qsUrl: string) {
     const { filter } = aqp(qsUrl);
@@ -69,47 +69,54 @@ export class JobsService {
   async findOne(id: string) {
     const checkExits = await this.jobModel.findOne({
       _id: id,
-    })
+    });
     if (!checkExits && !mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException("Không tìm thấy job!")
+      throw new BadRequestException('Không tìm thấy job!');
     }
     return this.jobModel.findOne({
       _id: id,
-    })
+    });
   }
 
   async update(id: string, updateJobDto: UpdateJobDto, user: IUser) {
     const checkExits = await this.jobModel.findOne({
       _id: id,
-    })
+    });
     if (!checkExits && !mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException("Không tìm thấy job!")
+      throw new BadRequestException('Không tìm thấy job!');
     }
-    return this.jobModel.updateOne({
-      _id: id,
-    }, {
-      ...updateJobDto, updatedBy: {
-        _id: new mongoose.Types.ObjectId(user._id.toString()),
-        name: user.name
-      }
-    })
+    return this.jobModel.updateOne(
+      {
+        _id: id,
+      },
+      {
+        ...updateJobDto,
+        updatedBy: {
+          _id: new mongoose.Types.ObjectId(user._id.toString()),
+          name: user.name,
+        },
+      },
+    );
   }
 
   async remove(id: string, user: IUser) {
     const checkExits = await this.jobModel.findOne({
       _id: id,
-    })
+    });
     if (!checkExits && !mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException("Không tìm thấy job!")
+      throw new BadRequestException('Không tìm thấy job!');
     }
-    await this.jobModel.updateOne({
-      _id: id
-    }, {
-      deletedBy: {
-        _id: new mongoose.Types.ObjectId(user._id.toString()),
-        name: user.name
-      }
-    })
-    return this.jobModel.softDelete({ _id: id })
+    await this.jobModel.updateOne(
+      {
+        _id: id,
+      },
+      {
+        deletedBy: {
+          _id: new mongoose.Types.ObjectId(user._id.toString()),
+          name: user.name,
+        },
+      },
+    );
+    return this.jobModel.softDelete({ _id: id });
   }
 }

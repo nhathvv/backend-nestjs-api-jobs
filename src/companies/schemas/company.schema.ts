@@ -15,7 +15,7 @@ export class Company {
   description: string;
 
   @Prop()
-  logo: string
+  logo: string;
 
   @Prop({ type: Object })
   createdBy: {

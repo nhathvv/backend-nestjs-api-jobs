@@ -6,10 +6,10 @@ import { Role, RoleSchema } from './schemas/role.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }])
+    MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }]),
   ],
   controllers: [RolesController],
   providers: [RolesService],
-  exports: [RolesService]
+  exports: [RolesService],
 })
-export class RolesModule { }
+export class RolesModule {}

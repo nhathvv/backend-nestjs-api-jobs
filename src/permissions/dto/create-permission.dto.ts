@@ -1,16 +1,15 @@
-import { IsNotEmpty } from "class-validator"
+import { IsNotEmpty } from 'class-validator';
 
 export class CreatePermissionDto {
   @IsNotEmpty()
-  name: string
+  name: string;
 
   @IsNotEmpty()
-  apiPath: string
+  apiPath: string;
 
   @IsNotEmpty()
-  method: string
+  method: string;
 
   @IsNotEmpty()
-  module: string
-
+  module: string;
 }

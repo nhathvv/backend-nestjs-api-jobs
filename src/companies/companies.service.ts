@@ -14,7 +14,7 @@ export class CompaniesService {
   constructor(
     @InjectModel(Company.name)
     private companyModel: SoftDeleteModel<CompanyDocument>,
-  ) { }
+  ) {}
 
   create(createCompanyDto: CreateCompanyDto, user: IUser) {
     return this.companyModel.create({
@@ -32,7 +32,6 @@ export class CompaniesService {
 
     delete filter.current;
     delete filter.pageSize;
-
 
     const offset = (currentPage - 1) * limit;
     const defaultLimit = limit ? limit : 10;
@@ -65,7 +64,7 @@ export class CompaniesService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid user!');
     }
-    return this.companyModel.findById({ _id: id })
+    return this.companyModel.findById({ _id: id });
   }
 
   update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {

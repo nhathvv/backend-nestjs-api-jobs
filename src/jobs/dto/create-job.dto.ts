@@ -1,42 +1,51 @@
-import { Type } from "class-transformer"
-import { IsArray, IsDefined, IsNotEmpty, IsNotEmptyObject, IsObject, ValidateNested, IsString, IsISO8601, IsDate } from "class-validator"
-import { CompanyDTO } from "src/users/dto/create-user.dto"
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsDefined,
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsObject,
+  ValidateNested,
+  IsString,
+  IsISO8601,
+  IsDate,
+} from 'class-validator';
+import { CompanyDTO } from 'src/users/dto/create-user.dto';
 
 export class CreateJobDto {
   @IsNotEmpty()
-  name: string
+  name: string;
 
   @IsArray()
   @IsString({ each: true })
-  skills: string[]
+  skills: string[];
 
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ValidateNested()
   @Type(() => CompanyDTO)
-  company: CompanyDTO
+  company: CompanyDTO;
 
   @IsNotEmpty()
-  salary: number
+  salary: number;
 
   @IsNotEmpty()
-  quantity: number
+  quantity: number;
 
   @IsNotEmpty()
-  level: string
+  level: string;
 
   @IsNotEmpty()
-  description: string
+  description: string;
 
   @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
-  startDate: Date
-
+  startDate: Date;
 
   @Type(() => Date)
   @IsDate()
   @IsNotEmpty()
-  endDate: Date
+  endDate: Date;
 }

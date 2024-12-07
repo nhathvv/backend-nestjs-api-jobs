@@ -15,18 +15,18 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private roleService: RolesService,
-  ) { }
+  ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOneByEmail(username);
     if (user) {
       if (this.usersService.isValidPassword(pass, user.password)) {
-        const userRole = user.role as unknown as { _id: string, name: string }
-        const temp = await this.roleService.findOne(userRole._id)
+        const userRole = user.role as unknown as { _id: string; name: string };
+        const temp = await this.roleService.findOne(userRole._id);
         const objUser = {
           ...user.toObject(),
-          permissions: temp?.permissions ?? []
-        }
+          permissions: temp?.permissions ?? [],
+        };
         return objUser;
       }
     }
@@ -34,9 +34,9 @@ export class AuthService {
   }
   signRefreshToken(payload: any) {
     return this.jwtService.sign(payload, {
-      secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
-      expiresIn: this.configService.get<string>("JWT_REFRESH_TOKEN_EXPIRESIN")
-    })
+      secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
+    });
   }
   async login(user: IUser, res: Response) {
     const { _id, name, email, role, permissions } = user;
@@ -48,32 +48,33 @@ export class AuthService {
       email,
       role,
     };
-    const refresh_token = this.signRefreshToken(payload)
-    await this.usersService.updateUserToken(refresh_token, _id)
-    res.cookie("refresh_token", refresh_token, {
+    const refresh_token = this.signRefreshToken(payload);
+    await this.usersService.updateUserToken(refresh_token, _id);
+    res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
-      maxAge: ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'))
-    })
+      maxAge: ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN')),
+    });
     return {
       access_token: this.jwtService.sign(payload),
       user: {
         _id,
         name,
         email,
-        role, permissions
-      }
+        role,
+        permissions,
+      },
     };
   }
 
   async register(registerUserDTO: RegisterUserDTO) {
-    return this.usersService.register(registerUserDTO)
+    return this.usersService.register(registerUserDTO);
   }
   async processNewToken(refreshToken: string, response: Response) {
     try {
       await this.jwtService.verify(refreshToken, {
-        secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
-      })
-      const user = await this.usersService.findUserByToken(refreshToken)
+        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      });
+      const user = await this.usersService.findUserByToken(refreshToken);
       if (user) {
         const { _id, name, email, role } = user;
         const payload = {
@@ -84,15 +85,17 @@ export class AuthService {
           email,
           role,
         };
-        const refresh_token = this.signRefreshToken(payload)
-        await this.usersService.updateUserToken(refresh_token, _id.toString())
-        const userRole = user.role as unknown as { _id: string, name: string }
-        const temp = await this.roleService.findOne(userRole._id)
-        response.clearCookie("refresh_token")
-        response.cookie("refresh_token", refresh_token, {
+        const refresh_token = this.signRefreshToken(payload);
+        await this.usersService.updateUserToken(refresh_token, _id.toString());
+        const userRole = user.role as unknown as { _id: string; name: string };
+        const temp = await this.roleService.findOne(userRole._id);
+        response.clearCookie('refresh_token');
+        response.cookie('refresh_token', refresh_token, {
           httpOnly: true,
-          maxAge: ms(this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'))
-        })
+          maxAge: ms(
+            this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRESIN'),
+          ),
+        });
         return {
           access_token: this.jwtService.sign(payload),
           user: {
@@ -100,19 +103,19 @@ export class AuthService {
             name,
             email,
             role,
-            permissions: temp?.permissions ?? []
-          }
+            permissions: temp?.permissions ?? [],
+          },
         };
       } else {
-        throw new BadRequestException("Không tìm thấy người dùng!")
+        throw new BadRequestException('Không tìm thấy người dùng!');
       }
     } catch (error) {
-      throw new BadRequestException("Token không hợp lệ. Vui lòng login!")
+      throw new BadRequestException('Token không hợp lệ. Vui lòng login!');
     }
   }
   async logout(user: IUser, response: Response) {
-    await this.usersService.updateUserToken(null, user._id.toString())
-    response.clearCookie("refresh_token")
-    return "Logout successfully!"
+    await this.usersService.updateUserToken(null, user._id.toString());
+    response.clearCookie('refresh_token');
+    return 'Logout successfully!';
   }
 }

@@ -1,42 +1,41 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose, { HydratedDocument } from "mongoose";
-import { Company } from "src/companies/schemas/company.schema";
-import { Job } from "src/jobs/schemas/job.shema";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Company } from 'src/companies/schemas/company.schema';
+import { Job } from 'src/jobs/schemas/job.shema';
 
 export type ResumeDocument = HydratedDocument<Resume>;
 
 @Schema({ timestamps: true })
 export class Resume {
   @Prop()
-  email: string
+  email: string;
 
   @Prop()
-  userId: mongoose.Schema.Types.ObjectId
+  userId: mongoose.Schema.Types.ObjectId;
 
   @Prop()
-  url: string
+  url: string;
 
   @Prop()
-  status: string // PENDING-REVIEWING-APPROVED-REJECTED
+  status: string; // PENDING-REVIEWING-APPROVED-REJECTED
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Company.name })
-  companyId: mongoose.Schema.Types.ObjectId
+  companyId: mongoose.Schema.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Job.name })
-  jobId: mongoose.Schema.Types.ObjectId
+  jobId: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: mongoose.Schema.Types.Array,
   })
-  history:
-    {
-      status: string,
-      updatedAt: Date,
-      updatedBy: {
-        _id: mongoose.Schema.Types.ObjectId
-        email: string
-      }
-    }[]
+  history: {
+    status: string;
+    updatedAt: Date;
+    updatedBy: {
+      _id: mongoose.Schema.Types.ObjectId;
+      email: string;
+    };
+  }[];
 
   @Prop({ type: Object })
   createdBy: {
@@ -67,6 +66,5 @@ export class Resume {
 
   @Prop()
   deletedAt: Date;
-
 }
 export const ResumeSchema = SchemaFactory.createForClass(Resume);

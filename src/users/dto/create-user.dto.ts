@@ -1,12 +1,21 @@
-import { IsDefined, IsEmail, IsMongoId, IsNotEmpty, IsNotEmptyObject, IsObject, IsString, ValidateNested } from 'class-validator';
+import {
+  IsDefined,
+  IsEmail,
+  IsMongoId,
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import mongoose from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CompanyDTO {
-  _id: mongoose.Schema.Types.ObjectId
-  name: string
-  logo: string
+  _id: mongoose.Schema.Types.ObjectId;
+  name: string;
+  logo: string;
 }
 export class CreateUserDto {
   @IsNotEmpty()
@@ -26,18 +35,18 @@ export class CreateUserDto {
   age: number;
 
   @IsNotEmpty()
-  address: string
+  address: string;
 
   @IsNotEmpty()
   @IsMongoId()
-  role: mongoose.Schema.Types.ObjectId
+  role: mongoose.Schema.Types.ObjectId;
 
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
   @ValidateNested()
   @Type(() => CompanyDTO)
-  company: CompanyDTO
+  company: CompanyDTO;
 }
 export class RegisterUserDTO {
   @IsNotEmpty()
@@ -57,7 +66,7 @@ export class RegisterUserDTO {
   age: number;
 
   @IsNotEmpty()
-  address: string
+  address: string;
 }
 export class UserLoginDto {
   @IsString()

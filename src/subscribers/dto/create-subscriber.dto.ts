@@ -1,16 +1,14 @@
-import { IsArray, IsNotEmpty, IsString } from "class-validator"
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateSubscriberDto {
+  @IsNotEmpty()
+  name: string;
 
   @IsNotEmpty()
-  name: string
-
-  @IsNotEmpty()
-  email: string
+  email: string;
 
   @IsArray()
   @IsNotEmpty()
   @IsString({ each: true })
-  skills: string[]
-
+  skills: string[];
 }

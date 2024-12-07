@@ -14,23 +14,25 @@ export class SubscribersService {
   constructor(
     @InjectModel(Subscriber.name)
     private subscribeModel: SoftDeleteModel<SubscriberDocument>,
-  ) { }
+  ) {}
   async create(createSubscriberDto: CreateSubscriberDto, user: IUser) {
-    const isExits = await this.subscribeModel.findOne({ email: createSubscriberDto.email })
+    const isExits = await this.subscribeModel.findOne({
+      email: createSubscriberDto.email,
+    });
     if (isExits) {
-      throw new BadRequestException("Email đã tồn tại trên hệ thống!")
+      throw new BadRequestException('Email đã tồn tại trên hệ thống!');
     }
     const newSub = await this.subscribeModel.create({
       ...createSubscriberDto,
       createdBy: {
         _id: new mongoose.Types.ObjectId(user._id),
-        name: user.email
-      }
-    })
+        name: user.email,
+      },
+    });
     return {
       _id: newSub._id,
-      createdAt: newSub.createdAt
-    }
+      createdAt: newSub.createdAt,
+    };
   }
 
   async findAll(limit: number, currentPage: number, qsUrl: string) {
@@ -39,7 +41,6 @@ export class SubscribersService {
 
     delete filter.current;
     delete filter.pageSize;
-
 
     const offset = (currentPage - 1) * limit;
     const defaultLimit = limit ? limit : 10;
@@ -71,40 +72,50 @@ export class SubscribersService {
 
   findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid) {
-      throw new BadRequestException("Invalid ID!")
+      throw new BadRequestException('Invalid ID!');
     }
-    return this.subscribeModel.findById(id)
+    return this.subscribeModel.findById(id);
   }
 
   update(updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
-    return this.subscribeModel.updateOne({
-      email: user.email,
-    }, {
-      ...updateSubscriberDto,
-      updatedBy: {
-        _id: new mongoose.Types.ObjectId(user._id),
-        name: user.email
-      }
-    }, { upsert: true })
+    return this.subscribeModel.updateOne(
+      {
+        email: user.email,
+      },
+      {
+        ...updateSubscriberDto,
+        updatedBy: {
+          _id: new mongoose.Types.ObjectId(user._id),
+          name: user.email,
+        },
+      },
+      { upsert: true },
+    );
   }
 
   async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid) {
-      throw new BadRequestException("Invalid ID!")
+      throw new BadRequestException('Invalid ID!');
     }
-    await this.subscribeModel.updateOne({
-      _id: id,
-    }, {
-      deletedBy: {
-        _id: new mongoose.Types.ObjectId(user._id),
-        name: user.email
-      }
-    })
-    return this.subscribeModel.softDelete({ _id: id })
+    await this.subscribeModel.updateOne(
+      {
+        _id: id,
+      },
+      {
+        deletedBy: {
+          _id: new mongoose.Types.ObjectId(user._id),
+          name: user.email,
+        },
+      },
+    );
+    return this.subscribeModel.softDelete({ _id: id });
   }
   async getSkills(user: IUser) {
-    return this.subscribeModel.findOne({
-      email: user.email
-    }, { skills: 1 })
+    return this.subscribeModel.findOne(
+      {
+        email: user.email,
+      },
+      { skills: 1 },
+    );
   }
 }

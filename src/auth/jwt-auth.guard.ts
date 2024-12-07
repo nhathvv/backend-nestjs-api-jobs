@@ -26,11 +26,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   handleRequest(err, user, info, context: ExecutionContext) {
-    const request: Request = context.switchToHttp().getRequest()
-    const isPublicPermission = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_PERMISSIONS, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const request: Request = context.switchToHttp().getRequest();
+    const isPublicPermission = this.reflector.getAllAndOverride<boolean>(
+      IS_PUBLIC_PERMISSIONS,
+      [context.getHandler(), context.getClass()],
+    );
     if (err || !user) {
       throw (
         err ||
@@ -39,15 +39,20 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         )
       );
     }
-    const targetMethod = request.method
-    const targetEndPoint = request.route.path
-    const permissions = user?.permissions ?? []
-    let isExits = permissions.find(permission => {
-      return targetEndPoint === permission.apiPath && targetMethod === permission.method
-    })
-    if (targetEndPoint.startsWith("/api/v1/auth")) isExits = true
+    const targetMethod = request.method;
+    const targetEndPoint = request.route.path;
+    const permissions = user?.permissions ?? [];
+    let isExits = permissions.find((permission) => {
+      return (
+        targetEndPoint === permission.apiPath &&
+        targetMethod === permission.method
+      );
+    });
+    if (targetEndPoint.startsWith('/api/v1/auth')) isExits = true;
     if (!isExits && !isPublicPermission) {
-      throw new ForbiddenException("Bạn không có quyền truy cập Endpoint này !!!")
+      throw new ForbiddenException(
+        'Bạn không có quyền truy cập Endpoint này !!!',
+      );
     }
     return user;
   }

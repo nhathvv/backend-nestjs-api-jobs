@@ -15,16 +15,15 @@ import { User, ResponeMessage, Public } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags("Companies")
+@ApiTags('Companies')
 @Controller('companies')
 export class CompaniesController {
-  constructor(private readonly companiesService: CompaniesService) { }
+  constructor(private readonly companiesService: CompaniesService) {}
 
   @Post()
   create(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
     return this.companiesService.create(createCompanyDto, user);
   }
-
 
   @Public()
   @Get()
@@ -38,7 +37,7 @@ export class CompaniesController {
   }
 
   @Public()
-  @ResponeMessage("Get company by ID")
+  @ResponeMessage('Get company by ID')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.companiesService.findOne(id);

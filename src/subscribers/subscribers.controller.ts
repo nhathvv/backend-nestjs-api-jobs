@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { SubscribersService } from './subscribers.service';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
@@ -9,16 +18,19 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Subscribers')
 @Controller('subscribers')
 export class SubscribersController {
-  constructor(private readonly subscribersService: SubscribersService) { }
+  constructor(private readonly subscribersService: SubscribersService) {}
 
   @Post()
-  @ResponeMessage("Create a subscriber")
-  create(@Body() createSubscriberDto: CreateSubscriberDto, @User() user: IUser) {
+  @ResponeMessage('Create a subscriber')
+  create(
+    @Body() createSubscriberDto: CreateSubscriberDto,
+    @User() user: IUser,
+  ) {
     return this.subscribersService.create(createSubscriberDto, user);
   }
 
   @Get()
-  @ResponeMessage("Fetch subscribers with paginate")
+  @ResponeMessage('Fetch subscribers with paginate')
   findAll(
     @Query('current') currentPage: string,
     @Query('pageSize') limit: string,
@@ -28,28 +40,31 @@ export class SubscribersController {
   }
 
   @Get(':id')
-  @ResponeMessage("Fetch subscriber by id")
+  @ResponeMessage('Fetch subscriber by id')
   findOne(@Param('id') id: string) {
     return this.subscribersService.findOne(id);
   }
 
   @Patch()
   @SkipPermission()
-  @ResponeMessage("Update a subscriber")
-  update(@Body() updateSubscriberDto: UpdateSubscriberDto, @User() user: IUser) {
+  @ResponeMessage('Update a subscriber')
+  update(
+    @Body() updateSubscriberDto: UpdateSubscriberDto,
+    @User() user: IUser,
+  ) {
     return this.subscribersService.update(updateSubscriberDto, user);
   }
 
   @Delete(':id')
-  @ResponeMessage("Delete a subscriber by id")
+  @ResponeMessage('Delete a subscriber by id')
   remove(@Param('id') id: string, @User() user: IUser) {
     return this.subscribersService.remove(id, user);
   }
 
-  @Post("skills")
-  @ResponeMessage("Get subscribers skills")
+  @Post('skills')
+  @ResponeMessage('Get subscribers skills')
   @SkipPermission()
   getUserSkills(@User() user: IUser) {
-    return this.subscribersService.getSkills(user)
+    return this.subscribersService.getSkills(user);
   }
 }

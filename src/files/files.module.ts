@@ -10,7 +10,7 @@ import { MulterConfigService } from './multer.config';
   imports: [
     MulterModule.registerAsync({
       useClass: MulterConfigService,
-    })
-  ]
+    }),
+  ],
 })
-export class FilesModule { }
+export class FilesModule {}

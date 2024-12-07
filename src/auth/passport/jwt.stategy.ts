@@ -9,8 +9,7 @@ import { RolesService } from 'src/roles/roles.service';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private configService: ConfigService,
-    private roleService: RolesService
-
+    private roleService: RolesService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -21,14 +20,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: IUser) {
     const { _id, name, email, role } = payload;
-    const temp = (await this.roleService.findOne(role._id)).toObject()
+    const temp = (await this.roleService.findOne(role._id)).toObject();
 
     return {
       _id,
       name,
       email,
       role,
-      permissions: temp?.permissions ?? []
+      permissions: temp?.permissions ?? [],
     };
   }
 }

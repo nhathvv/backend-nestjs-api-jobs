@@ -1,32 +1,32 @@
-import { IsNotEmpty } from "class-validator"
-import mongoose from "mongoose"
+import { IsNotEmpty } from 'class-validator';
+import mongoose from 'mongoose';
 
 export class CreateResumeDto {
   @IsNotEmpty()
-  email: string
+  email: string;
 
   @IsNotEmpty()
-  userId: mongoose.Schema.Types.ObjectId
+  userId: mongoose.Schema.Types.ObjectId;
 
   @IsNotEmpty()
-  url: string
+  url: string;
 
   @IsNotEmpty()
-  status: string // PENDING-REVIEWING-APPROVED-REJECTED
+  status: string; // PENDING-REVIEWING-APPROVED-REJECTED
 
   @IsNotEmpty()
-  companyId: mongoose.Schema.Types.ObjectId
+  companyId: mongoose.Schema.Types.ObjectId;
 
   @IsNotEmpty()
-  jobId: mongoose.Schema.Types.ObjectId
+  jobId: mongoose.Schema.Types.ObjectId;
 }
 export class CreateCvDto {
   @IsNotEmpty()
-  url: string
+  url: string;
 
   @IsNotEmpty()
-  companyId: mongoose.Schema.Types.ObjectId
+  companyId: mongoose.Schema.Types.ObjectId;
 
   @IsNotEmpty()
-  jobId: mongoose.Schema.Types.ObjectId
+  jobId: mongoose.Schema.Types.ObjectId;
 }

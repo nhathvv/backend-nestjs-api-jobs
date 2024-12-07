@@ -29,4 +29,4 @@ import { RolesModule } from 'src/roles/roles.module';
   exports: [AuthService],
   controllers: [AuthController],
 })
-export class AuthModule { }
+export class AuthModule {}

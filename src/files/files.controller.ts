@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseFilePipeBuilder, HttpStatus, UseFilters } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+  UseFilters,
+} from '@nestjs/common';
 import { FilesService } from './files.service';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -6,21 +17,20 @@ import { Public, ResponeMessage } from 'src/decorator/customize';
 import { ApiTags } from '@nestjs/swagger';
 import { HttpExceptionFilter } from 'src/core/http-exception.filter';
 
-@ApiTags("Files")
+@ApiTags('Files')
 @Controller('files')
 export class FilesController {
-  constructor(private readonly filesService: FilesService) { }
+  constructor(private readonly filesService: FilesService) {}
 
   @Public()
   @Post('upload')
-  @ResponeMessage("Upload single file")
+  @ResponeMessage('Upload single file')
   @UseInterceptors(FileInterceptor('fileUpload'))
   @UseFilters(new HttpExceptionFilter())
-  uploadFile(
-    @UploadedFile() file: Express.Multer.File) {
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
     return {
-      fileName: file.filename
-    }
+      fileName: file.filename,
+    };
   }
   @Get()
   findAll() {

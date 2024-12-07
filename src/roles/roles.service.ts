@@ -15,26 +15,30 @@ export class RolesService {
   constructor(
     @InjectModel(Role.name)
     private roleModel: SoftDeleteModel<RoleDocument>,
-    private configService: ConfigService
-  ) { }
+    private configService: ConfigService,
+  ) {}
   async create(createRoleDto: CreateRoleDto, user: IUser) {
-    const { name, description, isActive, permissions } = createRoleDto
+    const { name, description, isActive, permissions } = createRoleDto;
     const isExits = await this.roleModel.findOne({
-      name
-    })
+      name,
+    });
     if (isExits) {
-      throw new BadRequestException("Role đã tồn tại!")
+      throw new BadRequestException('Role đã tồn tại!');
     }
     const newRole = await this.roleModel.create({
-      name, description, isActive, permissions, createdBy: {
+      name,
+      description,
+      isActive,
+      permissions,
+      createdBy: {
         _id: new mongoose.Types.ObjectId(user._id),
-        email: user.email
-      }
-    })
+        email: user.email,
+      },
+    });
     return {
       _id: newRole._id,
-      createdAt: newRole.createdAt
-    }
+      createdAt: newRole.createdAt,
+    };
   }
 
   async findAll(limit: number, currentPage: number, qsUrl: string) {
@@ -43,7 +47,6 @@ export class RolesService {
 
     delete filter.current;
     delete filter.pageSize;
-
 
     const offset = (currentPage - 1) * limit;
     const defaultLimit = limit ? limit : 10;
@@ -60,8 +63,8 @@ export class RolesService {
       .limit(defaultLimit)
       .select(projection)
       .populate({
-        path: "permissions",
-        select: { _id: 1, apiPath: 1, name: 1, method: 1, module: 1 }
+        path: 'permissions',
+        select: { _id: 1, apiPath: 1, name: 1, method: 1, module: 1 },
       })
       .setOptions({ strictPopulate: false })
       .sort(sort)
@@ -80,49 +83,55 @@ export class RolesService {
 
   async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException("Invalid id!")
+      throw new BadRequestException('Invalid id!');
     }
     return (await this.roleModel.findById(id)).populate({
-      path: "permissions",
-      select: { _id: 1, apiPath: 1, name: 1, method: 1, module: 1 }
-    })
+      path: 'permissions',
+      select: { _id: 1, apiPath: 1, name: 1, method: 1, module: 1 },
+    });
   }
 
   update(id: string, updateRoleDto: UpdateRoleDto, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException("Invalid id!")
+      throw new BadRequestException('Invalid id!');
     }
-    return this.roleModel.updateOne({
-      _id: id
-    }, {
-      ...updateRoleDto,
-      updatedBy: {
-        _id: new mongoose.Types.ObjectId(user._id),
-        email: user.email
-      }
-    })
+    return this.roleModel.updateOne(
+      {
+        _id: id,
+      },
+      {
+        ...updateRoleDto,
+        updatedBy: {
+          _id: new mongoose.Types.ObjectId(user._id),
+          email: user.email,
+        },
+      },
+    );
   }
 
   async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException("Invalid id!")
+      throw new BadRequestException('Invalid id!');
     }
     const role = await this.roleModel.findOne({
       _id: id,
-    })
+    });
     if (role.name === this.configService.get<string>('ROLE_ADMIN')) {
-      throw new BadRequestException("Không được xoá role ADMIN")
+      throw new BadRequestException('Không được xoá role ADMIN');
     }
-    await this.roleModel.updateOne({
-      _id: id
-    }, {
-      deletedBy: {
-        _id: new mongoose.Types.ObjectId(user._id),
-        email: user.email
-      }
-    })
+    await this.roleModel.updateOne(
+      {
+        _id: id,
+      },
+      {
+        deletedBy: {
+          _id: new mongoose.Types.ObjectId(user._id),
+          email: user.email,
+        },
+      },
+    );
     return this.roleModel.softDelete({
-      _id: id
-    })
+      _id: id,
+    });
   }
 }

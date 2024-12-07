@@ -26,9 +26,9 @@ export class User {
 
   @Prop({ type: Object })
   company: {
-    _id: mongoose.Schema.Types.ObjectId,
-    name: string
-  }
+    _id: mongoose.Schema.Types.ObjectId;
+    name: string;
+  };
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Role.name })
   role: mongoose.Schema.Types.ObjectId;
@@ -58,13 +58,13 @@ export class User {
   updatedBy: {
     _id: mongoose.Schema.Types.ObjectId;
     email: string;
-  }
+  };
 
   @Prop({ type: Object })
   deletedBy: {
     _id: mongoose.Schema.Types.ObjectId;
     email: string;
-  }
+  };
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

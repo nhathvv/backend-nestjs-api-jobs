@@ -6,41 +6,41 @@ export type JobDocument = HydratedDocument<Job>;
 @Schema({ timestamps: true })
 export class Job {
   @Prop()
-  name: string
+  name: string;
 
   @Prop()
-  skills: string[]
+  skills: string[];
 
   @Prop({ type: Object })
   company: {
-    _id: mongoose.Schema.Types.ObjectId
-    name: string
-    logo: string
-  }
+    _id: mongoose.Schema.Types.ObjectId;
+    name: string;
+    logo: string;
+  };
 
   @Prop()
-  location: string
+  location: string;
 
   @Prop()
-  salary: number
+  salary: number;
 
   @Prop()
-  quantity: number
+  quantity: number;
 
   @Prop()
-  level: string
+  level: string;
 
   @Prop()
-  description: string
+  description: string;
 
   @Prop()
-  startDate: Date
+  startDate: Date;
 
   @Prop()
-  endDate: Date
+  endDate: Date;
 
   @Prop()
-  isActive: boolean
+  isActive: boolean;
 
   @Prop()
   createdAt: Date;
@@ -64,13 +64,13 @@ export class Job {
   updatedBy: {
     _id: mongoose.Schema.Types.ObjectId;
     email: string;
-  }
+  };
 
   @Prop({ type: Object })
   deletedBy: {
     _id: mongoose.Schema.Types.ObjectId;
     email: string;
-  }
+  };
 }
 
 export const JobSchema = SchemaFactory.createForClass(Job);
